@@ -35,4 +35,12 @@ class BookingApiTest {
                 .andExpect(jsonPath("$.path")
                         .value("/rooms/room-missing/bookings/booking-1011"));
     }
+    @Test
+    void returnsNotFoundForMissingBooking() throws Exception {
+        mockMvc.perform(get("/rooms/room-101/bookings/booking-missing"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("BOOKING_NOT_FOUND"))
+                .andExpect(jsonPath("$.path")
+                        .value("/rooms/room-101/bookings/booking-missing"));
+    }
 }
