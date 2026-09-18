@@ -43,4 +43,30 @@ class BookingApiTest {
                 .andExpect(jsonPath("$.path")
                         .value("/rooms/room-101/bookings/booking-missing"));
     }
+    @Test
+    void returnsUnavailableForOverlappingWindow() throws Exception {
+        mockMvc.perform(get("/rooms/room-202/availability")
+                        .param("start", "2030-01-15T10:15:00")
+                        .param("end", "2030-01-15T10:45:00"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.available").value(false));
+    }
+
+    @Test
+    void returnsAvailableForNonOverlappingWindow() throws Exception {
+        mockMvc.perform(get("/rooms/room-202/availability")
+                        .param("start", "2030-01-15T11:00:00")
+                        .param("end", "2030-01-15T11:30:00"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.available").value(true));
+    }
+
+    @Test
+    void returnsAvailableForAdjacentWindow() throws Exception {
+        mockMvc.perform(get("/rooms/room-202/availability")
+                        .param("start", "2030-01-15T10:30:00")
+                        .param("end", "2030-01-15T11:00:00"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.available").value(true));
+    }
 }
