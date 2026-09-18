@@ -36,7 +36,11 @@ public class BookingService {
     }
 
     public Booking create(String roomId, LocalDateTime start, LocalDateTime end) {
-        throw new UnsupportedOperationException("Booking creation is not implemented");
+
+        if (isAvailable(roomId, start, end)) {
+            return bookingRepository.create(roomId, start, end);
+        }
+        throw new BookingConflictException(roomId, start, end);
     }
 
     public boolean isAvailable(String roomId, LocalDateTime start, LocalDateTime end) {
